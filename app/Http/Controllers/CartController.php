@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Models\OutletCall;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Exception\ConnectException;
 
 
@@ -242,19 +243,11 @@ class CartController extends Controller
 
     private function outletById($outlet)
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'outlet/detail/' . auth()->user()->sbu_code . '?outlet_code=' . $outlet);
-
-            if ($response->successful()) {
-                $response = $response->object();
-                return $response->data[0];
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_customer_details(?)", [
+                $outlet,
+            ]);
+        return $data[0];
     }
 
     private function warehouse()

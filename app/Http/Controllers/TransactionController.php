@@ -93,10 +93,10 @@ class TransactionController extends Controller
     {
         $title = 'Tambah Transaksi';
         $residency = self::residency();
-        $residency = collect($residency);
-        $userDetails = auth()->user()->userDetails;
-        $userDetails = $userDetails->pluck('residency');
-        $residency = $residency->whereIn('kode_kar', $userDetails->toArray());
+        // $residency = collect($residency);
+        // $userDetails = auth()->user()->userDetails;
+        // $userDetails = $userDetails->pluck('residency');
+        // $residency = $residency->whereIn('kode_kar', $userDetails->toArray());
 
         // Pre-population data from dashboard
         $prePopulate = [
@@ -403,105 +403,149 @@ class TransactionController extends Controller
 
     private function residency()
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'karesidenan/' . auth()->user()->sbu_code);
+        return DB::connection('hlj')->select("SELECT * FROM public.sp_residency(?, ?)", ['', '']);
 
-            if ($response->successful()) {
-                $response = $response->object();
-                return $response->data;
-            } else {
-                return [];
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        // $apiURL = env('API_URL_DMLT');
+        // try {
+        //     $response = Http::withHeaders([
+        //         'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        //     ])->withOptions(["verify" => false])->get($apiURL . 'karesidenan/' . auth()->user()->sbu_code);
+
+        //     if ($response->successful()) {
+        //         $response = $response->object();
+        //         return $response->data;
+        //     } else {
+        //         return [];
+        //     }
+        // } catch (ConnectException $e) {
+        //     return $e->getMessage();
+        // }
     }
 
     public function cities($residency)
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'kabupaten/' . auth()->user()->sbu_code . '/' . $residency);
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_regency(?)", [$residency]);
 
-            if ($response->successful()) {
-                $response = $response->object();
-                return response()->json([
-                    'success' => true,
-                    'data' => $response->data
-                ]);
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+
+        // $apiURL = env('API_URL_DMLT');
+        // try {
+        //     $response = Http::withHeaders([
+        //         'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        //     ])->withOptions(["verify" => false])->get($apiURL . 'kabupaten/' . auth()->user()->sbu_code . '/' . $residency);
+
+        //     if ($response->successful()) {
+        //         $response = $response->object();
+        //         return response()->json([
+        //             'success' => true,
+        //             'data' => $response->data
+        //         ]);
+        //     }
+        // } catch (ConnectException $e) {
+        //     return $e->getMessage();
+        // }
     }
 
     public function districts($residency, $city)
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'kecamatan/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city);
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_subdistrict(?, ?)", [
+                $residency,
+                $city
+            ]);
 
-            if ($response->successful()) {
-                $response = $response->object();
-                return response()->json([
-                    'success' => true,
-                    'data' => $response->data
-                ]);
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+
+        // $apiURL = env('API_URL_DMLT');
+        // try {
+        //     $response = Http::withHeaders([
+        //         'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        //     ])->withOptions(["verify" => false])->get($apiURL . 'kecamatan/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city);
+
+        //     if ($response->successful()) {
+        //         $response = $response->object();
+        //         return response()->json([
+        //             'success' => true,
+        //             'data' => $response->data
+        //         ]);
+        //     }
+        // } catch (ConnectException $e) {
+        //     return $e->getMessage();
+        // }
     }
 
     public function outlet($residency, $city, $district)
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'outlet/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city . '/' . $district);
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_customer(?, ?, ?, ?)", [
+                $residency,
+                $city,
+                $district,
+                ''
+            ]);
 
-            if ($response->successful()) {
-                $response = $response->object();
-                return response()->json([
-                    'success' => true,
-                    'data' => $response->data
-                ]);
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+
+        // $apiURL = env('API_URL_DMLT');
+        // try {
+        //     $response = Http::withHeaders([
+        //         'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        //     ])->withOptions(["verify" => false])->get($apiURL . 'outlet/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city . '/' . $district);
+
+        //     if ($response->successful()) {
+        //         $response = $response->object();
+        //         return response()->json([
+        //             'success' => true,
+        //             'data' => $response->data
+        //         ]);
+        //     }
+        // } catch (ConnectException $e) {
+        //     return $e->getMessage();
+        // }
     }
 
     public function outletById($residency, $city, $district, $outlet)
     {
-        $apiURL = env('API_URL_DMLT');
-        try {
-            $response = Http::withHeaders([
-                'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-            ])->withOptions(["verify" => false])->get($apiURL . 'outlet/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city . '/' . $district . '?outlet_code=' . $outlet);
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_customer(?, ?, ?, ?)", [
+                $residency,
+                $city,
+                $district,
+                $outlet
+            ]);
 
-            if ($response->successful()) {
-                $response = $response->object();
+        return $data[0];
 
-                // if($local) {
-                //     return response()->json([
-                //         'success' => true,
-                //         'data' => $response->data[0]
-                //     ]);
-                // }
-                return $response->data[0];
-            }
-        } catch (ConnectException $e) {
-            return $e->getMessage();
-        }
+        // $apiURL = env('API_URL_DMLT');
+        // try {
+        //     $response = Http::withHeaders([
+        //         'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        //     ])->withOptions(["verify" => false])->get($apiURL . 'outlet/' . auth()->user()->sbu_code . '/' . $residency . '/' . $city . '/' . $district . '?outlet_code=' . $outlet);
+
+        //     if ($response->successful()) {
+        //         $response = $response->object();
+
+        //         // if($local) {
+        //         //     return response()->json([
+        //         //         'success' => true,
+        //         //         'data' => $response->data[0]
+        //         //     ]);
+        //         // }
+        //         return $response->data[0];
+        //     }
+        // } catch (ConnectException $e) {
+        //     return $e->getMessage();
+        // }
     }
 
     public function productByOutlet($outlet)
@@ -523,38 +567,57 @@ class TransactionController extends Controller
 
     public function productTypeBySBU()
     {
-        $apiURL = env('API_URL_DMLT');
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_item_category()");
 
-        $response = Http::withHeaders([
-            'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-        ])->withOptions(["verify" => false])->get($apiURL . 'jenis/barang/' . auth()->user()->sbu_code);
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
 
-        if ($response->successful()) {
-            $response = $response->object();
+        // $apiURL = env('API_URL_DMLT');
 
-            return response()->json([
-                'success' => true,
-                'data' => $response->data
-            ]);
-        }
+        // $response = Http::withHeaders([
+        //     'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        // ])->withOptions(["verify" => false])->get($apiURL . 'jenis/barang/' . auth()->user()->sbu_code);
+
+        // if ($response->successful()) {
+        //     $response = $response->object();
+
+        //     return response()->json([
+        //         'success' => true,
+        //         'data' => $response->data
+        //     ]);
+        // }
     }
 
     public function productsByType($type)
     {
-        $apiURL = env('API_URL_DMLT');
-
-        $response = Http::withHeaders([
-            'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
-        ])->withOptions(["verify" => false])->get($apiURL . 'all/barang/' . auth()->user()->sbu_code . '/' . $type);
-
-        if ($response->successful()) {
-            $response = $response->object();
-
-            return response()->json([
-                'success' => true,
-                'data' => $response->data
+        $data =  DB::connection('boa_gabungan')
+            ->select("SELECT * FROM public.sp_all_masterbrg(?, ?)", [
+                $type,
+                ''
             ]);
-        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+
+        // $apiURL = env('API_URL_DMLT');
+
+        // $response = Http::withHeaders([
+        //     'access-token-dmlt' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwiZmlyc3RfbmFtZSI6IkFyZHkgIiwibGFzdF9uYW1lIjoiU3VyeWEiLCJlbWFpbCI6ImFyZHlkYW5nZXJvdXNAZ21haWwuY29tIiwicGFzc3dvcmQiOiI2ZDdkZWQxODc3OGQ4ZjY4NTRhNDE4Nzg2ZDA3MzA1MDIxN2UxNTAyIiwiaXBfYWRkcmVzcyI6IjEwMy44My4xNzkuMjEwIn0.2SFCqr_MB7LyLv8JmtmAgPBTfgAk2KqOVs2T2MfOSTA'
+        // ])->withOptions(["verify" => false])->get($apiURL . 'all/barang/' . auth()->user()->sbu_code . '/' . $type);
+
+        // if ($response->successful()) {
+        //     $response = $response->object();
+
+        //     return response()->json([
+        //         'success' => true,
+        //         'data' => $response->data
+        //     ]);
+        // }
     }
 
     public function vehicle()
