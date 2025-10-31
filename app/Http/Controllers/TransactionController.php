@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use App\Repositories\StatusRepository;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\TransactionRepository;
+use App\Services\DatabaseService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -17,11 +18,13 @@ class TransactionController extends Controller
 {
     private TransactionRepository $repository;
     private StatusRepository $statusRepository;
+    private DatabaseService $databaseService;
 
-    public function __construct(TransactionRepository $transactionRepository, StatusRepository $statusRepository)
+    public function __construct(TransactionRepository $transactionRepository, StatusRepository $statusRepository, DatabaseService $databaseService)
     {
         $this->repository = $transactionRepository;
         $this->statusRepository = $statusRepository;
+        $this->databaseService = $databaseService;
     }
 
     public function index()
@@ -403,7 +406,8 @@ class TransactionController extends Controller
 
     private function residency()
     {
-        return DB::connection('hlj')->select("SELECT * FROM public.sp_residency(?, ?)", ['', '']);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_residency', ['', '']);
+        return $data['data'];
 
         // $apiURL = env('API_URL_DMLT');
         // try {
@@ -424,12 +428,11 @@ class TransactionController extends Controller
 
     public function cities($residency)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_regency(?)", [$residency]);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_regency', [$residency]);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data['data']
         ]);
 
         // $apiURL = env('API_URL_DMLT');
@@ -452,15 +455,14 @@ class TransactionController extends Controller
 
     public function districts($residency, $city)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_subdistrict(?, ?)", [
-                $residency,
-                $city
-            ]);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_subdistrict', [
+            $residency,
+            $city
+        ]);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data['data']
         ]);
 
         // $apiURL = env('API_URL_DMLT');
@@ -483,17 +485,16 @@ class TransactionController extends Controller
 
     public function outlet($residency, $city, $district)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_customer(?, ?, ?, ?)", [
-                $residency,
-                $city,
-                $district,
-                ''
-            ]);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_customer', [
+            $residency,
+            $city,
+            $district,
+            ''
+        ]);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data['data']
         ]);
 
         // $apiURL = env('API_URL_DMLT');
@@ -516,15 +517,14 @@ class TransactionController extends Controller
 
     public function outletById($residency, $city, $district, $outlet)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_customer(?, ?, ?, ?)", [
-                $residency,
-                $city,
-                $district,
-                $outlet
-            ]);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_customer', [
+            $residency,
+            $city,
+            $district,
+            $outlet
+        ]);
 
-        return $data[0];
+        return $data['data'][0];
 
         // $apiURL = env('API_URL_DMLT');
         // try {
@@ -567,12 +567,11 @@ class TransactionController extends Controller
 
     public function productTypeBySBU()
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_item_category()");
+        $data = $this->databaseService->callDatabaseFunction('public.sp_item_category', []);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data['data']
         ]);
 
         // $apiURL = env('API_URL_DMLT');
@@ -593,15 +592,14 @@ class TransactionController extends Controller
 
     public function productsByType($type)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_all_masterbrg(?, ?)", [
-                $type,
-                ''
-            ]);
+        $data = $this->databaseService->callDatabaseFunction('public.sp_all_masterbrg', [
+            $type,
+            ''
+        ]);
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data['data']
         ]);
 
         // $apiURL = env('API_URL_DMLT');

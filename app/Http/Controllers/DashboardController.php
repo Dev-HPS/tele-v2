@@ -101,7 +101,7 @@ class DashboardController extends Controller
 
         // Data untuk dashboard baru dengan TP
         $sbuList = $this->getSbuList();
-        // $category = $this->databaseService->callStoredProcedure('sp_kategori_brg');
+        // $category = $this->databaseService->callDatabaseFunction('sp_kategori_brg');
         // $category = $category['data'];
 
         $selectedSbu = $request->sbu ?? null;
@@ -146,7 +146,7 @@ class DashboardController extends Controller
         $title = 'Dashboard Outlet Call';
 
         // Get basic data for filters
-        $category = $this->databaseService->callStoredProcedure('sp_kategori_brg');
+        $category = $this->databaseService->callDatabaseFunction('public.sp_kategori_brg');
         $category = $category['data'];
 
         $selectedCategory = $request->category ?? 1;
@@ -158,7 +158,7 @@ class DashboardController extends Controller
             $sbu = OutletCall::where('city', $city)->first();
             if ($sbu) {
                 $outlet = $this->outletCallRepository->paramOutlet($city);
-                $result = $this->databaseService->callStoredProcedure('sp_target_omset_call', [$selectedCategory, $selectedSort, $outlet], $sbu->sbu_code);
+                $result = $this->databaseService->callDatabaseFunction('public.sp_target_omset_call', [$selectedCategory, $selectedSort, $outlet], $sbu->sbu_code);
                 $data = $result['data'] ?? [];
             }
         }
@@ -191,7 +191,7 @@ class DashboardController extends Controller
             }
 
             $outlet = $this->outletCallRepository->paramOutlet($city);
-            $result = $this->databaseService->callStoredProcedure('sp_target_omset_call', [$selectedCategory, $selectedSort, $outlet], $sbu->sbu_code);
+            $result = $this->databaseService->callDatabaseFunction('public.sp_target_omset_call', [$selectedCategory, $selectedSort, $outlet], $sbu->sbu_code);
             $data = $result['data'] ?? [];
 
             return response()->json([
@@ -343,8 +343,8 @@ class DashboardController extends Controller
             $outletParam = implode(',', $outlets);
 
             // Call stored procedure
-            $data = $this->databaseService->callStoredProcedure(
-                'sp_target_omset_call',
+            $data = $this->databaseService->callDatabaseFunction(
+                'public.sp_target_omset_call',
                 [$category, $sort, $outletParam],
                 $sbuCode
             );

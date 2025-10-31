@@ -296,8 +296,8 @@ class OutletListController extends Controller
             }
 
             // Call stored procedure with fixed parameters [1, 1] and outlet code
-            $result = $this->databaseService->callStoredProcedure(
-                'sp_target_omset_call',
+            $result = $this->databaseService->callDatabaseFunction(
+                'public.sp_target_omset_call',
                 [1, 1, $outletCode],
                 $outlet->sbu_code
             );
@@ -359,14 +359,14 @@ class OutletListController extends Controller
     public function getTp(Request $request)
     {
         $sbuCode = $request->sbu_code;
-        return $this->databaseService->callStoredProcedure('sp_master_tp', [], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.sp_master_tp', [], $sbuCode);
     }
 
     public function getCitiesByTp(Request $request)
     {
         $tp = $request->tp;
         $sbuCode = $request->sbu_code;
-        return $this->databaseService->callStoredProcedure('sp_kabupaten_tp', [$tp], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.sp_kabupaten_tp', [$tp], $sbuCode);
     }
 
     public function getDistrictsByTpCity(Request $request)
@@ -374,6 +374,6 @@ class OutletListController extends Controller
         $tp = $request->tp;
         $city = $request->city;
         $sbuCode = $request->sbu_code;
-        return $this->databaseService->callStoredProcedure('sp_kecamatan_tp', [$tp, $city], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.sp_kecamatan_tp', [$tp, $city], $sbuCode);
     }
 }

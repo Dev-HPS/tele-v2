@@ -30,7 +30,7 @@ class OutletCallController extends Controller
     public function index()
     {
         $title = 'Outlet Call';
-        $tp = $this->databaseService->callStoredProcedure('sp_master_tp');
+        $tp = $this->databaseService->callDatabaseFunction('public.sp_master_tp');
         $tp = $tp['data'];
 
 
@@ -340,26 +340,26 @@ class OutletCallController extends Controller
     {
         $sbuCode = $request->sbu_code;
 
-        return $this->databaseService->callStoredProcedure('sp_master_tp', [], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.sp_master_tp', [], $sbuCode);
     }
 
 
     public function cities($tp)
     {
         $sbuCode = request()->get('sbu_code');
-        return  $this->databaseService->callStoredProcedure('sp_kabupaten_tp', [$tp], $sbuCode);
+        return  $this->databaseService->callDatabaseFunction('public.sp_kabupaten_tp', [$tp], $sbuCode);
     }
 
     public function districts($tp, $city)
     {
         $sbuCode = request()->get('sbu_code');
-        return  $this->databaseService->callStoredProcedure('sp_kecamatan_tp', [$tp, $city], $sbuCode);
+        return  $this->databaseService->callDatabaseFunction('public.sp_kecamatan_tp', [$tp, $city], $sbuCode);
     }
 
     public function outlet($tp, $city, $district)
     {
         $sbuCode = request()->get('sbu_code');
-        return $this->databaseService->callStoredProcedure('sp_pelanggan_aktif_jual', [$tp, $city, $district], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.sp_pelanggan_aktif_jual', [$tp, $city, $district], $sbuCode);
     }
 
     public function datatable(Request $request)
@@ -410,8 +410,8 @@ class OutletCallController extends Controller
             }
 
             // Call stored procedure with fixed parameters [1, 1] and outlet code
-            $result = $this->databaseService->callStoredProcedure(
-                'sp_target_omset_call',
+            $result = $this->databaseService->callDatabaseFunction(
+                'public.sp_target_omset_call',
                 [1, 1, $outletCode],
                 $outlet->sbu_code
             );
@@ -469,8 +469,8 @@ class OutletCallController extends Controller
             }
 
             // Call stored procedure sp_detail_outlet with outlet_code
-            $result = $this->databaseService->callStoredProcedure(
-                'sp_detail_outlet',
+            $result = $this->databaseService->callDatabaseFunction(
+                'public.sp_detail_outlet',
                 [$outletCode],
                 $outlet->sbu_code
             );
