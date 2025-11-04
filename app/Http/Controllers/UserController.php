@@ -292,7 +292,7 @@ class UserController extends Controller
     public function getTpBySbu($sbu)
     {
         try {
-            $tpData = $this->databaseService->callDatabaseFunction('public.sp_master_tp', [], $sbu);
+            $tpData = $this->databaseService->callDatabaseFunction('public.get_tp', [], $sbu);
 
             return response()->json([
                 'success' => true,

@@ -30,7 +30,7 @@ class OutletCallController extends Controller
     public function index()
     {
         $title = 'Outlet Call';
-        $tp = $this->databaseService->callDatabaseFunction('public.sp_master_tp');
+        $tp = $this->databaseService->callDatabaseFunction('public.get_tp');
         $tp = $tp['data'];
 
 
@@ -340,14 +340,14 @@ class OutletCallController extends Controller
     {
         $sbuCode = $request->sbu_code;
 
-        return $this->databaseService->callDatabaseFunction('public.sp_master_tp', [], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.get_tp', [], $sbuCode);
     }
 
 
     public function cities($tp)
     {
         $sbuCode = request()->get('sbu_code');
-        return  $this->databaseService->callDatabaseFunction('public.sp_kabupaten_tp', [$tp], $sbuCode);
+        return  $this->databaseService->callDatabaseFunction('public.get_kabupaten', [$tp], $sbuCode);
     }
 
     public function districts($tp, $city)
@@ -359,7 +359,7 @@ class OutletCallController extends Controller
     public function outlet($tp, $city, $district)
     {
         $sbuCode = request()->get('sbu_code');
-        return $this->databaseService->callDatabaseFunction('public.sp_pelanggan_aktif_jual', [$tp, $city, $district], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.get_customer', [$tp, $city, $district], $sbuCode);
     }
 
     public function datatable(Request $request)

@@ -15,10 +15,10 @@ class SbuHelper
                 'sbu_code' => 'NPA',
                 'sbu_name' => 'PT. Niaga Permai Abadi',
             ],
-            // [
-            //     'sbu_code' => 'HLJ',
-            //     'sbu_name' => 'PT. Hasta Lestari Jaya',
-            // ],
+            [
+                'sbu_code' => 'HLJ',
+                'sbu_name' => 'PT. Hasta Lestari Jaya',
+            ],
         ]);
     }
 }

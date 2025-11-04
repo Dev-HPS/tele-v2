@@ -146,7 +146,7 @@ class DashboardController extends Controller
         $title = 'Dashboard Outlet Call';
 
         // Get basic data for filters
-        $category = $this->databaseService->callDatabaseFunction('public.sp_kategori_brg');
+        $category = $this->databaseService->callDatabaseFunction('public.get_item_group');
         $category = $category['data'];
 
         $selectedCategory = $request->category ?? 1;

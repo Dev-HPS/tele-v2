@@ -9,10 +9,10 @@
 
     <style>
         /* .card-img-top {
-                                                        width: 100%;
-                                                        max-height: 20vh;
-                                                        object-fit: contain;
-                                                    } */
+                                                                                    width: 100%;
+                                                                                    max-height: 20vh;
+                                                                                    object-fit: contain;
+                                                                                } */
     </style>
 @endpush
 
@@ -173,7 +173,7 @@
                         const $tp = $('#tp');
                         $tp.empty().append('<option></option>');
                         for (let i = 0; i < data.length; i++) {
-                            $tp.append(`<option value="${data[i].kodetp}">${data[i].nama_tp}</option>`);
+                            $tp.append(`<option value="${data[i].kode_tp}">${data[i].nama_tp}</option>`);
                         }
                         // pastikan state select2 sinkron
                         $tp.val(null).trigger('change');
@@ -225,6 +225,7 @@
                         $('#outlet_code').empty()
                         $('#city').append('<option></option>')
                         for (let i = 0; i < data.length; i++) {
+                            console.log(data[i]);
                             if (city != null) {
                                 if (data[i].kode === city) {
                                     $('#city').append(
@@ -356,12 +357,12 @@
                             if (outlet != null) {
                                 if (data[i].outlet_code == outlet) {
                                     $('#outlet_code').append(
-                                        `<option value="${data[i].outlet_code}" selected>${data[i].outlet_code} - ${data[i].outlet_name}</option>`
+                                        `<option value="${data[i].customer_code}" selected>${data[i].customer_code} - ${data[i].customer_name}</option>`
                                     )
                                 }
                             }
                             $('#outlet_code').append(
-                                `<option value="${JSON.stringify(data[i]).replace(/"/g, '&quot;')}">${data[i].outlet_name}</option>`
+                                `<option value="${JSON.stringify(data[i]).replace(/"/g, '&quot;')}">${data[i].customer_name}</option>`
                             );
                         }
                     } else {

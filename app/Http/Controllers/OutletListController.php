@@ -359,14 +359,14 @@ class OutletListController extends Controller
     public function getTp(Request $request)
     {
         $sbuCode = $request->sbu_code;
-        return $this->databaseService->callDatabaseFunction('public.sp_master_tp', [], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.get_tp', [], $sbuCode);
     }
 
     public function getCitiesByTp(Request $request)
     {
         $tp = $request->tp;
         $sbuCode = $request->sbu_code;
-        return $this->databaseService->callDatabaseFunction('public.sp_kabupaten_tp', [$tp], $sbuCode);
+        return $this->databaseService->callDatabaseFunction('public.get_kabupaten', [$tp], $sbuCode);
     }
 
     public function getDistrictsByTpCity(Request $request)
