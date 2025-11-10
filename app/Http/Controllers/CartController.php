@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Str;
 use App\Models\OutletCall;
+use App\Services\DatabaseService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -21,11 +22,14 @@ class CartController extends Controller
 {
     private CartRepository $repository;
     private TransactionRepository $transactionRepository;
+    private DatabaseService $databaseService;
 
-    public function __construct(CartRepository $cartRepository, TransactionRepository $transactionRepository)
+
+    public function __construct(CartRepository $cartRepository, TransactionRepository $transactionRepository, DatabaseService $databaseService)
     {
         $this->repository = $cartRepository;
         $this->transactionRepository = $transactionRepository;
+        $this->databaseService = $databaseService;
     }
 
     /**
@@ -243,11 +247,9 @@ class CartController extends Controller
 
     private function outletById($outlet)
     {
-        $data =  DB::connection('boa_gabungan')
-            ->select("SELECT * FROM public.sp_customer_details(?)", [
-                $outlet,
-            ]);
-        return $data[0];
+        $data = $this->databaseService->callDatabaseFunction('public.sp_customer_details', [$outlet]);
+        $result = $data['data'];
+        return $result[0];
     }
 
     private function warehouse()
